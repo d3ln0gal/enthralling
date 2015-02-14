@@ -28,6 +28,14 @@ SpriteMorph.prototype.var_createOrSet = function(name, value, global){
 	this.parentThatIsA(IDE_Morph).refreshPalette();
 }
 
+SpriteMorph.prototype.var_getByName = function(attributeName){
+	if(this.variables.silentFind(attributeName)){
+		return this.variables.getVar(attributeName);			
+	}else{
+		return "NIL";
+	}
+}
+
 SpriteMorph.prototype.var_delete = function(name){
 	if(this.variables.silentFind(name)){
 		this.deleteVariableWatcher(name);
@@ -98,6 +106,11 @@ SpriteMorph.prototype.motor_createReader = function(name){
 	}
 }
 
+SpriteMorph.prototype.motor_getMaxSpeed = function(motor){
+  var url = this.var_getByName("type") + "/motor_getMaxSpeed?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);  
+}
+
 SpriteMorph.prototype.motor_getSpeed = function(motor){
   var url = this.var_getByName("type") + "/motor_getSpeed?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
   return enthrall_getJSON(url);
@@ -109,17 +122,72 @@ SpriteMorph.prototype.motor_setSpeed = function(motor, speed){
   enthrall_getJSON(url);
 }
 
-SpriteMorph.prototype.motor_rotate = function(motor, deg){
+SpriteMorph.prototype.motor_setAcceleration = function(motor, acceleration){
+  var url = this.var_getByName("type") + "/motor_setAcceleration?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  url += "&acceleration=" + acceleration;
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.motor_rotate = function(motor, angle, immediateReturn){
+  immediateReturn = immediateReturn ? true : false;
   var url = this.var_getByName("type") + "/motor_rotate?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
-  url += "&angle=" + deg + "&immediateReturn=false";
+  url += "&angle=" + angle + "&immediateReturn=" + immediateReturn;
   return enthrall_getJSON(url);
 }
 
-SpriteMorph.prototype.var_getByName = function(attributeName){
-	if(this.variables.silentFind(attributeName)){
-		return this.variables.getVar(attributeName);			
-	}else{
-		return "NIL";
-	}
+SpriteMorph.prototype.motor_getTachoCount = function(motor){
+  var url = this.var_getByName("type") + "/motor_getTachoCount?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);  
 }
+
+SpriteMorph.prototype.motor_resetTachoCount = function(motor){
+  var url = this.var_getByName("type") + "/motor_resetTachoCount?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.motor_rotateTo = function(motor, angle, angle, immediateReturn){
+  immediateReturn = immediateReturn ? true : false;
+  var url = this.var_getByName("type") + "/motor_rotateTo?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  url += "&angle=" + angle + "&immediateReturn=" + immediateReturn;
+  return enthrall_getJSON(url);
+}
+
+SpriteMorph.prototype.motor_isMoving = function(motor){
+  var url = this.var_getByName("type") + "/motor_isMoving?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.motor_setStallThreshold = function(motor, error, time){
+  var url = this.var_getByName("type") + "/motor_setStallThreshold?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  url += "&error=" + error + "&time=" + time;
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.motor_isStalled = function(motor){
+  var url = this.var_getByName("type") + "/motor_isStalled?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.motor_forward = function(motor){
+  var url = this.var_getByName("type") + "/motor_forward?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);
+}
+
+SpriteMorph.prototype.motor_backward = function(motor){
+  var url = this.var_getByName("type") + "/motor_backward?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);
+}
+
+SpriteMorph.prototype.motor_stop = function(motor){
+  var url = this.var_getByName("type") + "/motor_stop?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);
+}
+
+SpriteMorph.prototype.motor_getLimitAngle = function(motor){
+  var url = this.var_getByName("type") + "/motor_getLimitAngle?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  return enthrall_getJSON(url);  
+}
+
+
+
 
