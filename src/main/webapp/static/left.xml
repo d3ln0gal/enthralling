@@ -1,0 +1,1 @@
+<blocks app="Snap! 4.0, http://snap.berkeley.edu" version="1"><block-definition s="LEFT" type="reporter" category="motors"><header></header><code></code><inputs></inputs><script><block s="doReport"><block var="LEFT"/></block></script></block-definition></blocks>

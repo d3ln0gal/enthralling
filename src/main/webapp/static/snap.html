@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Snap! Build Your Own Blocks. Beta</title>
+		<link rel="shortcut icon" href="favicon.ico">
+		<script type="text/javascript" src="morphic.js"></script>
+		<script type="text/javascript" src="widgets.js"></script>
+		<script type="text/javascript" src="blocks.js"></script>
+		<script type="text/javascript" src="threads.js"></script>
+		<script type="text/javascript" src="objects.js"></script>
+		<script type="text/javascript" src="gui.js"></script>
+		<script type="text/javascript" src="paint.js"></script>
+		<script type="text/javascript" src="lists.js"></script>
+		<script type="text/javascript" src="byob.js"></script>
+		<script type="text/javascript" src="xml.js"></script>
+		<script type="text/javascript" src="store.js"></script>
+		<script type="text/javascript" src="locale.js"></script>
+		<script type="text/javascript" src="cloud.js"></script>
+		<script type="text/javascript" src="sha512.js"></script>
+		<script type="text/javascript" src="enthralling.js"></script>
+		<script type="text/javascript">
+		StageMorph.prototype.categories.push("robot");
+		StageMorph.prototype.blockColor["robot"] = new Color(10, 10, 10);
+		StageMorph.prototype.categories.push("motors");
+		StageMorph.prototype.blockColor["motors"] = new Color(0, 255, 255);
+		StageMorph.prototype.categories.push("sensors");
+		StageMorph.prototype.blockColor["sensors"] = new Color(155, 0, 155);
+		StageMorph.prototype.categories.push("driver");
+		StageMorph.prototype.blockColor["driver"] = new Color(0, 255, 10);
+		StageMorph.prototype.categories.push("private");
+		StageMorph.prototype.blockColor["private"] = new Color(255, 255, 255);
+		StageMorph.prototype.categories.push("template-robot");
+		StageMorph.prototype.blockColor["template-robot"] = new Color(32,74,135);
+		StageMorph.prototype.categories.push("template-motors");
+		StageMorph.prototype.blockColor["template-motors"] = new Color(32,74,135);		
+		StageMorph.prototype.categories.push("template-sensors");
+		StageMorph.prototype.blockColor["template-sensors"] = new Color(32,74,135);		
+			var world;
+			window.onload = function () {
+				world = new WorldMorph(document.getElementById('world'));
+                world.worldCanvas.focus();
+				new IDE_Morph().openIn(world);
+				setInterval(loop, 1);
+			};
+			function loop() {
+				world.doOneCycle();
+			}
+		</script>
+	</head>
+	<body style="margin: 0;">
+		<canvas id="world" tabindex="1" style="position: absolute;" />
+	</body>
+</html>
