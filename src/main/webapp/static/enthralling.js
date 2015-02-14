@@ -179,7 +179,7 @@ SpriteMorph.prototype.motor_backward = function(motor){
 }
 
 SpriteMorph.prototype.motor_stop = function(motor){
-  var url = this.var_getByName("type") + "/motor_stop?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"];
+  var url = this.var_getByName("type") + "/motor_stop?address=" + this.var_getByName("address") + "&port=" + motor["port"] + "&motorType=" + motor["type"] + "&immediateReturn=true";
   return enthrall_getJSON(url);
 }
 
