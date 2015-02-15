@@ -191,3 +191,33 @@ SpriteMorph.prototype.motor_getLimitAngle = function(motor){
 
 
 
+SpriteMorph.prototype.sensorIR_createOrSet = function(name,port,mode){
+  this.var_createOrSet(name, {port: port, type: "lejos.hardware.sensor.EV3IRSensor", mode: mode}, false);
+  //this.motor_createReader(name);
+  var ide = this.parentThatIsA(IDE_Morph);  
+  ide.flushBlocksCache();	
+  ide.flushPaletteCache();
+  ide.refreshPalette();	  
+}
+
+SpriteMorph.prototype.sensor_createOrSet = function(name,port){
+  this.var_createOrSet(name, {port: ("S" + port)}, false);
+  //this.motor_createReader(name);
+  var ide = this.parentThatIsA(IDE_Morph);  
+  ide.flushBlocksCache();	
+  ide.flushPaletteCache();
+  ide.refreshPalette();	  
+}
+
+SpriteMorph.prototype.sensorIR_getDistance = function(sensor){
+  var url = this.var_getByName("type") + "/sensorIR_getDistance?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
+  return enthrall_getJSON(url);
+}
+
+SpriteMorph.prototype.sensorEV3Color_getRGB = function(sensor){
+  var url = this.var_getByName("type") + "/sensorEV3Color_getRGB?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
+  return enthrall_getJSON(url);
+}
+
+
+

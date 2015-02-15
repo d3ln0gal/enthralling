@@ -1,5 +1,6 @@
 package enthralling.rest;
-
+//TODO force snap client to create robot first. All methods must return immediately if robot is not connected first
+//to avoid freeze in waiting for server response, set perhaps a short timeout also
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -22,6 +23,7 @@ import restx.security.RolesAllowed;
 import restx.security.RestxSession;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMIRemoteRegulatedMotor;
+import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 
 @Component @RestxResource
@@ -201,6 +203,49 @@ public class EV3Resource {
     	}
     }
     
+    @GET("/EV3/sensorIR_getRC")
+    @PermitAll
+    public Integer sensorIR_getRC(int channel){
+    	return 0;
+    }
+    
+    @GET("/EV3/sensorIR_getDistance")
+    @PermitAll
+    public String sensorIR_getDistance(String address, String port){
+    	try{
+    		return "" + (getSensor(address,port,"lejos.hardware.sensor.EV3IRSensor", "Distance").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+
+    @GET("/EV3/sensorIR_getRC")
+    @PermitAll
+    public String sensorIR_getRC(String address, String port, int channel ){
+    	try{
+    		return "" + (getSensor(address,port,"lejos.hardware.sensor.EV3IRSensor", "Remote").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensorEV3Color_getRGB")
+    @PermitAll
+    public String sensorEV3Color_getRGB(String address, String port){
+    	try{
+    		float [] sample = getSensor(address,port,"lejos.hardware.sensor.EV3ColorSensor", "RGB").fetchSample();
+    		String result = "[[\"R\"," + sample[0] + "],";
+    		result += "[\"G\"," + sample[1] + "],";
+    		result += "[\"B\"," + sample[2] + "]]";
+    		return result;
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
     
     
     private static final RMIRegulatedMotor getMotor(String address, String port, char motorType) throws RemoteException, MalformedURLException, NotBoundException{
@@ -223,6 +268,8 @@ public class EV3Resource {
     private static final HashMap<String,RemoteEV3>ev3s = new HashMap<String,RemoteEV3>();
     //<IPAddress|port>
     private static final HashMap<String,RMIRegulatedMotor>motors = new HashMap<String,RMIRegulatedMotor>();
+    //<IPAddress|port>
+    private static final HashMap<String,RMISampleProvider>sensors = new HashMap<String,RMISampleProvider>();
 
     
     private static final RemoteEV3 getEV3(String address) throws RemoteException, MalformedURLException, NotBoundException{
@@ -246,6 +293,18 @@ public class EV3Resource {
     		return m;
     	}
     	
-    }    
+    }  
+    
+    private static final RMISampleProvider getSensor(String address, String portName, String sensorName, String modeName) throws RemoteException, MalformedURLException, NotBoundException{
+    	String key = address.concat(portName);
+    	if( sensors.containsKey(key)){
+    		return sensors.get(key);
+    	}else{
+    		RMISampleProvider s;
+    		s = getEV3(address).createSampleProvider(portName, sensorName, modeName);
+    		sensors.put(key, s);
+    		return s;
+    	}
+    }
   
 }
