@@ -409,6 +409,20 @@ public class EV3Resource {
     	}
     }
     
+    @GET("/EV3/playTone")
+    @PermitAll
+    public String playTone(String address, int tone, int length){
+    	try{
+    		//TODO remember playedTone, if same do nothing, change note only if diff or infinity
+    		//do this for length 0, 
+    		getAudio(address).playTone(tone, length);
+    		return "ok";
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}    	
+    }
+    
     private static final RMIRegulatedMotor getMotor(String address, String port, char motorType) throws RemoteException, MalformedURLException, NotBoundException{
     	//return getEV3(address).createRegulatedMotor(port, motorType);
     	if(motors.containsKey(address + port)){
