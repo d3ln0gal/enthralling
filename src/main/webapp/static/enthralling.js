@@ -200,8 +200,15 @@ SpriteMorph.prototype.sensorIR_createOrSet = function(name,port,mode){
   ide.refreshPalette();	  
 }
 
+SpriteMorph.prototype.sensor_close = function(sensor){
+  var url = this.var_getByName("type") + "/sensor_close?address=" + this.var_getByName("address") + "&port=" + sensor["port"];
+  return enthrall_getJSON(url);
+}
+
 SpriteMorph.prototype.sensor_createOrSet = function(name,port){
   this.var_createOrSet(name, {port: ("S" + port)}, false);
+  //this.var_createOrSet(name, [["port", ("S" + port)]], false);
+  //this.var_createOrSet(name, args,false);
   //this.motor_createReader(name);
   var ide = this.parentThatIsA(IDE_Morph);  
   ide.flushBlocksCache();	
@@ -214,10 +221,55 @@ SpriteMorph.prototype.sensorIR_getDistance = function(sensor){
   return enthrall_getJSON(url);
 }
 
+SpriteMorph.prototype.sensorIR_getRC = function(sensor, channel){
+  var url = this.var_getByName("type") + "/sensorIR_getRC?address=" + this.var_getByName("address") + "&port=" + sensor["port"] + "&channel=" + channel;
+  return enthrall_getJSON(url);
+}
+
 SpriteMorph.prototype.sensorEV3Color_getRGB = function(sensor){
   var url = this.var_getByName("type") + "/sensorEV3Color_getRGB?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
   return enthrall_getJSON(url);
 }
 
+SpriteMorph.prototype.sensorEV3Color_getAmbient = function(sensor){
+  var url = this.var_getByName("type") + "/sensorEV3Color_getAmbient?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
+  return enthrall_getJSON(url);  
+}
 
+SpriteMorph.prototype.sensorEV3Color_getColorID = function(sensor){
+  var url = this.var_getByName("type") + "/sensorEV3Color_getColorID?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.sensorEV3Color_getRed = function(sensor){
+  var url = this.var_getByName("type") + "/sensorEV3Color_getRed?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
+  return enthrall_getJSON(url);  
+}
+
+SpriteMorph.prototype.sensorEV3Touch_isPressed = function(sensor){
+  var url = this.var_getByName("type") + "/sensorEV3Touch_isPressed?address=" + this.var_getByName("address") + "&port=" + sensor["port"] ;
+  var r = enthrall_getJSON(url);
+  if( r == 1 ) return true;
+  if( r == 0 ) return false;
+  return r;
+}
+
+SpriteMorph.prototype.var_ListToMap = function(list){
+  var map = {};
+  for(var i = 1; i <= list.length()/2; i += 2){
+    map[list.at(i)] = list.at(i+1);
+  }
+  return map;
+}
+
+SpriteMorph.prototype.enthrall_call = function(method, params){
+  var url = this.var_getByName("type") + "/" + method + "?address=" + this.var_getByName("address");
+  for( var i = 1; i <= params.length(); i++){
+    var keys = Object.keys(params.at(i));
+    for( var j = 0; j < keys.length; j++ ){
+      url += "&" + keys[j] + "=" + params.at(i)[keys[j]];
+    }
+  }
+  return enthrall_getJSON(url);
+}
 

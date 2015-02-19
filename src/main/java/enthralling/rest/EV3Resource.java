@@ -21,6 +21,10 @@ import restx.factory.Component;
 import restx.security.PermitAll;
 import restx.security.RolesAllowed;
 import restx.security.RestxSession;
+import lejos.hardware.Audio;
+import lejos.hardware.port.Port;
+import lejos.hardware.port.UARTPort;
+import lejos.hardware.sensor.EV3IRSensor;
 import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMIRemoteRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
@@ -203,29 +207,61 @@ public class EV3Resource {
     	}
     }
     
-    @GET("/EV3/sensorIR_getRC")
-    @PermitAll
-    public Integer sensorIR_getRC(int channel){
-    	return 0;
-    }
-    
     @GET("/EV3/sensorIR_getDistance")
     @PermitAll
     public String sensorIR_getDistance(String address, String port){
     	try{
-    		return "" + (getSensor(address,port,"lejos.hardware.sensor.EV3IRSensor", "Distance").fetchSample()[0]);
+    		String res = "" + (getSensor(address,port,"lejos.hardware.sensor.EV3IRSensor", "Distance").fetchSample()[0]);
+    		if(res == "Infinity") res = "" + -1;
+    		return res;
     	}
     	catch(Exception x){
     		return x.toString();
     	}
     }
     
+    @GET("/EV3/sensorIR_getSeek")
+    @PermitAll
+    public String sensor_IR_getBeacon(String address, String port){
+    	try{
+    		return "" + (getSensor(address,port,"lejos.hardware.sensor.EV3IRSensor", "Seek").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
 
     @GET("/EV3/sensorIR_getRC")
     @PermitAll
     public String sensorIR_getRC(String address, String port, int channel ){
     	try{
-    		return "" + (getSensor(address,port,"lejos.hardware.sensor.EV3IRSensor", "Remote").fetchSample()[0]);
+    		return Integer.toString(getRemoteControl(address,port).getRemoteCommand(channel));
+    		/*
+    		byte [] cmds = new byte[4];
+    		cmds[0] = 0;
+    		cmds[1] = 0;
+    		cmds[2] = 0;
+    		cmds[3] = 0;
+    		getRemoteControl(address,port).getRemoteCommands(cmds, 0, 4);
+    		for( int i = 0; i<4; i++){
+    			System.out.println(cmds[i]);
+    		}
+    		String result = "";
+    		result += getRemoteControl(address,port).getAvailableModes() + ";";
+    		result += getRemoteControl(address,port).getCurrentMode() + ";--";
+    		result += getRemoteControl(address, port).getRemoteCommand(0) + ";";
+    		result += Integer.toString(getRemoteControl(address, port).getRemoteCommand(1)) + ";";
+    		result += Integer.toString(getRemoteControl(address, port).getRemoteCommand(2)) + ";";
+    		result += Integer.toString(getRemoteControl(address, port).getRemoteCommand(3)) + ";";
+    		result += getRemoteControl(address,port).getRemoteCommand(0);
+    		return result;
+    		*/
+    		//getRemoteControl(address, port).getRemoteCommands(cmds,0,4);
+    		//String result = "";
+    		//for( int i = 0; i < 4; i++ ){
+    		//	result += cmds[i] + ";";
+    		//}
+    		//return result;
     	}
     	catch(Exception x){
     		return x.toString();
@@ -247,6 +283,131 @@ public class EV3Resource {
     	}
     }
     
+    @GET("/EV3/sensorEV3Color_getAmbient")
+    @PermitAll
+    public String sensorEV3Color_getAmbient(String address, String port){
+    	try{
+    		return Float.toString(getSensor(address,port, "lejos.hardware.sensor.EV3ColorSensor", "Ambient").fetchSample()[0]);
+    		
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensorEV3Color_getRed")
+    @PermitAll
+    public String sensorEV3Color_getRed(String address, String port){
+    	try{
+    		return Float.toString(getSensor(address,port, "lejos.hardware.sensor.EV3ColorSensor", "Red").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensorEV3Color_getColorID")
+    @PermitAll
+    public String sensorEV3Color_getColorID(String address, String port){
+    	try{
+    		return Float.toString(getSensor(address,port, "lejos.hardware.sensor.EV3ColorSensor", "ColorID").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensorEV3Touch_isPressed")
+    @PermitAll
+    public String sensorEV3Touch_isPressed(String address, String port){
+    	try{
+    		return Boolean.toString(
+    				getSensor(address,port,"lejos.hardware.sensor.EV3TouchSensor", "Touch").fetchSample()[0] > 0 ? true : false
+    						);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensor_close")
+    @PermitAll
+    public String sensorClose(String address, String port){
+    	try{
+    		closeSensor(address,port);
+    		return "ok";
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensorEV3Gyro_getAngle")
+    @PermitAll
+    public String sensorEV3Gyro_getAngle(String address, String port){
+    	try{
+    		return Float.toString(getSensor(address,port,"lejos.hardware.sensor.EV3GyroSensor", "Angle").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/sensorEV3Gyro_getRate")
+    @PermitAll
+    public String sensorEV3Gyro_getRate(String address, String port){
+    	try{
+    		return Float.toString(getSensor(address,port,"lejos.hardware.sensor.EV3GyroSensor", "Rate").fetchSample()[0]);
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
+    
+    //TODO this one doesn't seem to work so I try to sequence both but bad
+    @GET("/EV3/sensorEV3Gyro_getAngleAndRate")
+    @PermitAll
+    public String sensorEV3Gyro_getAngleAndRate(String address, String port){
+    	try{
+    		String res = "[";
+    		res += Float.toString(getSensor(address,port, "lejos.hardware.sensor.EV3GyroSensor", "Angle").fetchSample()[0]);
+    		closeSensor(address,port);
+    		res += ",";
+    		res += Float.toString(getSensor(address,port, "lejos.hardware.sensor.EV3GyroSensor", "Rate").fetchSample()[0]);
+    		closeSensor(address,port);
+    		res += "]";
+    		return res;
+    	}
+    	catch(Exception x ){
+    		return x.toString();
+    	}
+    }
+    
+    @GET("/EV3/playNote")
+    @PermitAll
+    public String playNote(String address, String instrument, int note, int length){
+    	int [] inst;
+    	switch( instrument ){
+    	case "XYLOPHONE": 
+    		inst = Audio.XYLOPHONE;
+    		break;
+    	case "FLUTE":
+    		inst = Audio.FLUTE;
+    		break;
+    	case "PIANO":
+    		inst = Audio.PIANO;
+    		break;
+    	default:
+    		inst = Audio.PIANO;
+    	}
+    	try{
+    		getAudio(address).playNote(inst, note, length);
+    		return "ok";
+    	}
+    	catch(Exception x){
+    		return x.toString();
+    	}
+    }
     
     private static final RMIRegulatedMotor getMotor(String address, String port, char motorType) throws RemoteException, MalformedURLException, NotBoundException{
     	//return getEV3(address).createRegulatedMotor(port, motorType);
@@ -270,6 +431,12 @@ public class EV3Resource {
     private static final HashMap<String,RMIRegulatedMotor>motors = new HashMap<String,RMIRegulatedMotor>();
     //<IPAddress|port>
     private static final HashMap<String,RMISampleProvider>sensors = new HashMap<String,RMISampleProvider>();
+    //<IPAddress|port>
+    private static final HashMap<String,EV3IRSensor>remoteControls = new HashMap<String,EV3IRSensor>();
+    //TODO <IPAddress|sensorName|mode> to use to auto close sensor port if changes(check if sensors can provide simultaneous samplers eg IR) 
+    private static final HashMap<String,String>sensorsModes = new HashMap<String,String>();
+    
+    private static final HashMap<String,Audio>audios = new HashMap<String,Audio>();
 
     
     private static final RemoteEV3 getEV3(String address) throws RemoteException, MalformedURLException, NotBoundException{
@@ -296,7 +463,7 @@ public class EV3Resource {
     }  
     
     private static final RMISampleProvider getSensor(String address, String portName, String sensorName, String modeName) throws RemoteException, MalformedURLException, NotBoundException{
-    	String key = address.concat(portName);
+    	String key = address.concat(portName); //TODO .concat(sensorName).concat(modeName);
     	if( sensors.containsKey(key)){
     		return sensors.get(key);
     	}else{
@@ -304,6 +471,47 @@ public class EV3Resource {
     		s = getEV3(address).createSampleProvider(portName, sensorName, modeName);
     		sensors.put(key, s);
     		return s;
+    	}
+    }
+    
+    private static final EV3IRSensor getRemoteControl(String address, String portName ) throws RemoteException, MalformedURLException, NotBoundException{
+    	String key = address.concat(portName);
+    	if(remoteControls.containsKey(key)){
+    		return remoteControls.get(key);
+    	}else{
+    		Port port = getEV3(address).getPort(portName);
+    		EV3IRSensor rc = new EV3IRSensor(port);
+    		remoteControls.put(key, rc);
+    		return rc;
+    	}
+    }
+    
+    private static final Audio getAudio(String address) throws RemoteException, MalformedURLException, NotBoundException{
+    	if( audios.containsKey(address)){
+    		return audios.get(address);
+    	}else{
+    		Audio a = getEV3(address).getAudio();
+    		audios.put(address, a);
+    		return a;
+    	}
+    }
+    
+    private static final void closeSensor(String address, String portName){
+    	String key = address.concat(portName);
+    	if( sensors.containsKey(key) && sensors.get(key) != null){
+    		try{
+    			sensors.get(key).close();
+    		}
+    		catch(Exception x){
+    			
+    		}
+    		finally{
+    			sensors.remove(key);
+    		}
+    	}
+    	if( remoteControls.containsKey(key) ){
+    		remoteControls.get(key).close();
+    		remoteControls.remove(key);
     	}
     }
   
